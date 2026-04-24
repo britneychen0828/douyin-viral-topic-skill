@@ -1,7 +1,7 @@
 ---
 name: douyin-topic-recommender
 description: >
-  为中文短视频创作者生成个性化爆款选题推荐。自动抓取抖音、微博、百度实时热榜，结合账号风格和调性，每次生成 8-10 条带匹配理由的选题建议。无需任何 API Key，完全本地运行。
+  为中文短视频创作者生成个性化爆款选题推荐。自动抓取抖音实时热榜 TOP30，结合账号风格和调性，每次生成 8-10 条带匹配理由的选题建议。无需任何 API Key，完全本地运行。
 
   必须触发的场景：
   - 用户提到"选题"、"爆款"、"抖音做什么"、"今天拍什么"、"内容方向"
@@ -20,7 +20,7 @@ compatibility:
 
 这个 Skill 做四件事：
 1. **记住你的账号风格** — 保存在本地 `~/.douyin_prefs.json`，下次打开直接用
-2. **抓取实时热榜** — 自动拉取抖音热点、微博热搜、百度热搜
+2. **抓取实时热榜** — 自动拉取抖音热榜 TOP30
 3. **生成匹配选题** — 结合你的账号定位，分析并生成带理由的选题清单
 4. **导出精美 Word 文档** — 自动生成 `.docx` 文件，带颜色分区、卡片排版，保存到桌面
 
@@ -99,13 +99,9 @@ echo '{
 python <skill_dir>/scripts/fetch_trending.py
 ```
 
-脚本会依次尝试抖音热点、微博热搜、百度热搜、知乎热榜，输出统一格式的 JSON。
+脚本只抓取**抖音热榜**，取前 30 条，输出包含完整热度值的 JSON。
 
-**如果所有脚本都失败**（网络问题），使用 WebFetch 作为备用：
-- 微博热搜 API：`https://weibo.com/ajax/side/hotSearch`
-- 百度热搜页：`https://top.baidu.com/board?tab=realtime`
-
-读取返回数据中的 `topics` 数组，提取热榜话题列表。
+**如果抓取失败**（网络问题），提示用户检查网络连接，或手动提供今日热榜话题。
 
 ---
 
@@ -113,7 +109,9 @@ python <skill_dir>/scripts/fetch_trending.py
 
 基于：
 - 用户偏好：`niche`、`tone`、`target_audience`、`keywords`
-- 当天热榜：`topics` 列表（标题 + 来源 + 热度）
+- 当天热榜：`topics` 列表（抖音热榜 TOP30，含标题 + 热度）
+
+**每条选题必须明确关联一个或多个抖音热榜话题**，在 `hot_topic` 字段写清楚蹭的是哪个热点。
 
 生成 **8-10 条选题建议**，分三类：
 
@@ -143,11 +141,12 @@ python <skill_dir>/scripts/fetch_trending.py
     "target_audience": "<目标受众>",
     "tone": "<内容调性>"
   },
-  "trending_summary": [
+  "topics": [
     {
-      "source": "<来源名，如：抖音热榜>",
-      "count": <条数>,
-      "top_topics": ["<热点1>", "<热点2>", "<热点3>"]
+      "title": "<热点话题>",
+      "heat": <热度值>,
+      "category": "抖音热榜",
+      "source": "抖音"
     }
   ],
   "recommendations": [

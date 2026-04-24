@@ -177,16 +177,16 @@ def _rec_card(doc: Document, rec: dict, index: int):
     _vspace(doc, 5)
 
 
-def _trending_table(doc: Document, summary: list[dict]):
-    """热榜摘要表格"""
-    if not summary:
+def _trending_list(doc: Document, topics: list[dict]):
+    """完整热榜列表，带序号和热度值"""
+    if not topics:
         return
 
     tbl = doc.add_table(rows=1, cols=3)
     tbl.alignment = WD_TABLE_ALIGNMENT.LEFT
 
     # 表头
-    for cell, label in zip(tbl.rows[0].cells, ["来源", "条数", "Top 3 热点"]):
+    for cell, label in zip(tbl.rows[0].cells, ["排名", "热点话题", "热度"]):
         _set_cell_bg(cell, "1A1A2E")
         _set_cell_border(cell, "1A1A2E")
         p = cell.paragraphs[0]
@@ -195,34 +195,36 @@ def _trending_table(doc: Document, summary: list[dict]):
         p.paragraph_format.space_after = Pt(4)
         _run(p, label, bold=True, size=10, color=C_WHITE)
 
-    for i, src in enumerate(summary):
+    for i, topic in enumerate(topics):
         row = tbl.add_row().cells
         bg = "F5F5F5" if i % 2 == 0 else "FFFFFF"
         for cell in row:
             _set_cell_bg(cell, bg)
             _set_cell_border(cell, "DDDDDD")
 
-        # 来源
+        # 排名
         p0 = row[0].paragraphs[0]
         p0.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p0.paragraph_format.space_before = Pt(3)
-        p0.paragraph_format.space_after = Pt(3)
-        _run(p0, src.get("source", ""), bold=True, size=10, color=C_DARK)
+        p0.paragraph_format.space_before = Pt(2)
+        p0.paragraph_format.space_after = Pt(2)
+        rank_color = C_RED if i < 3 else C_DARK
+        _run(p0, f"{i + 1}", bold=True, size=10, color=rank_color)
 
-        # 条数
+        # 热点话题
         p1 = row[1].paragraphs[0]
-        p1.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p1.paragraph_format.space_before = Pt(3)
-        p1.paragraph_format.space_after = Pt(3)
-        _run(p1, str(src.get("count", 0)), bold=True, size=11, color=C_ORANGE)
+        p1.paragraph_format.left_indent = Cm(0.2)
+        p1.paragraph_format.space_before = Pt(2)
+        p1.paragraph_format.space_after = Pt(2)
+        _run(p1, topic.get("title", ""), size=9, color=C_DARK)
 
-        # Top 热点
+        # 热度
         p2 = row[2].paragraphs[0]
-        p2.paragraph_format.left_indent = Cm(0.2)
-        p2.paragraph_format.space_before = Pt(3)
-        p2.paragraph_format.space_after = Pt(3)
-        tops = src.get("top_topics", [])[:3]
-        _run(p2, "  ·  ".join(tops), size=9, color=C_DARK)
+        p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p2.paragraph_format.space_before = Pt(2)
+        p2.paragraph_format.space_after = Pt(2)
+        heat = topic.get("heat", 0)
+        heat_str = f"{heat:,}" if heat else "—"
+        _run(p2, heat_str, size=9, color=C_ORANGE)
 
 
 def _summary_box(doc: Document, text: str):
@@ -257,7 +259,7 @@ def build_doc(data: dict, output_path: Path):
     date_str = data.get("date", datetime.now().strftime("%Y-%m-%d %H:%M"))
     niche    = prefs.get("niche", "我的账号")
     audience = prefs.get("target_audience", "")
-    summary  = data.get("trending_summary", [])
+    topics   = data.get("topics", [])
     recs     = data.get("recommendations", [])
     daily    = data.get("daily_summary", "")
 
@@ -278,12 +280,12 @@ def build_doc(data: dict, output_path: Path):
 
     _divider(doc)
 
-    # ── 热榜摘要 ─────────────────────────────────────────
+    # ── 抖音热榜 TOP30 ───────────────────────────────────
     p_hdr = doc.add_paragraph()
     p_hdr.paragraph_format.space_after = Pt(6)
-    _run(p_hdr, "📊  热榜数据摘要", bold=True, size=13, color=C_DARK)
+    _run(p_hdr, "📊  抖音热榜 TOP30", bold=True, size=13, color=C_DARK)
 
-    _trending_table(doc, summary)
+    _trending_list(doc, topics)
     _vspace(doc, 10)
 
     # ── 选题推荐（按分类分组）────────────────────────────
