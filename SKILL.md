@@ -217,6 +217,6 @@ python <skill_dir>/scripts/manage_prefs.py delete
 `<skill_dir>` 指本 Skill 所在目录的绝对路径。运行脚本前，先确认路径。可以用以下方式定位：
 
 ```bash
-# 如果从 git clone 安装，通常在 ~/.claude/skills/ 或用户指定的目录
-ls ~/.claude/skills/douyin-topic-recommender/scripts/
+# 如果从 git clone 安装，通常在 ~/.kimi/skills/ 或用户指定的目录
+ls ~/.kimi/skills/douyin-topic-recommender/scripts/
 ```

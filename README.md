@@ -1,6 +1,6 @@
 # 抖音爆款选题推荐 Skill
 
-一个运行在 [Claude Code](https://claude.ai/code) 上的 AI Skill，帮助短视频创作者每天获取个性化爆款选题建议。
+一个运行在 Kimi 上的 AI Skill，帮助短视频创作者每天获取个性化爆款选题建议。
 
 **无需任何 API Key，数据完全本地，开箱即用。**
 
@@ -16,7 +16,7 @@
 
 ### 前置条件
 
-- [Claude Code](https://claude.ai/code) 已安装
+- Kimi 已安装
 - Python 3.8+
 
 ### 步骤
@@ -29,16 +29,16 @@ cd douyin-topic-recommender
 # 2. 安装 Python 依赖
 pip install -r scripts/requirements.txt
 
-# 3. 将 Skill 安装到 Claude Code
-# 方式一：复制到 Claude Code skills 目录
-cp -r . ~/.claude/skills/douyin-topic-recommender/
+# 3. 将 Skill 安装到 Kimi
+# 方式一：复制到 Kimi skills 目录
+cp -r . ~/.kimi/skills/douyin-topic-recommender/
 
-# 方式二：在 Claude Code 中直接指向本目录（参考 Claude Code 文档）
+# 方式二：在 Kimi 中直接指向本目录（参考 Kimi 文档）
 ```
 
 ## 使用
 
-在 Claude Code 中，直接说：
+在 Kimi 中，直接说：
 
 ```
 帮我推荐今天的选题
